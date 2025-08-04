@@ -25,7 +25,7 @@ To get started with the project, follow these steps:
    ```
 2. **Install the required tools**:
    - Ensure you have the latest versions of Xschem, Ngspice, Magic VLSI, and Netgen installed on your system.
-   - Refer to the another repository for installation instructions: [Name of the other repository](line-to-other-repo).
+   - Refer to the another repository for installation instructions: [transistor_analysis_sky130](https://github.com/Krishanu-007/transistor_analysis_sky130).
 3. **Open the schematic**:  
    - Launch Xschem and open the `inv.sch` file located in the `Xschem` directory. This file contains the schematic of the CMOS inverter.
    - You can view the symbolic representation of the inverter by opening the `inv.sym` file in the same directory.

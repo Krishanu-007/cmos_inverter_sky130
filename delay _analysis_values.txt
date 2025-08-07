@@ -1,0 +1,8 @@
+delay times:
+tpHL=37.542 ps
+tpLH=44.61 ps
+
+propagation_delay=41.07 ps
+
+rise_time=0.13 ns
+fall_time=0.136 ns

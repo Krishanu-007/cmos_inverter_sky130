@@ -16,13 +16,17 @@ The entire operation is done by using the standard `1.8v nfet` and `1.8v pfet`. 
 
 | Section | Description |
 |--------|-------------|
-| [Design and analysis of CMOS inverter using Sky130 pdk](#design-and-analysis-of-cmos-inverter-using-sky130-pdk) | Introduction and overview |
-| [Getting Started](#getting-started) | How to clone the repo, install tools, and run simulations |
-| [Pre-Layout Analysis](#pre-layout-analysis) | Signal strength behavior of individual NMOS and PMOS |
-| [CMOS Inverter Design](#cmos-inverter-design) | Why CMOS is used and how an inverter is formed |
-| [Idea of Inverter](#idea-of-inverter) | Logic explanation of the NOT gate and its importance |
-| [CMOS VTC analysis](#cmos-vtc-analysis) | VTC plot, threshold voltage, and schematic/simulation |
-| [CMOS Noise Analysis](#cmos-noise-analysis) | Noise margin extraction and gain curve |
+| [Introduction](#design-and-analysis-of-cmos-inverter-using-sky130-pdk) | Overview of the project |
+| [Progress](#progress) | Current status of the design |
+| [Getting Started](#getting-started) | How to set up tools and run simulations |
+| [Pre-Layout Analysis](#pre-layout-analysis) | Testing NMOS and PMOS individually |
+| [CMOS Inverter Design](#cmos-inverter-design) | Concept, schematic, and operation |
+| [CMOS VTC Analysis](#cmos-vtc-analysis) | Transfer characteristics and sizing |
+| [CMOS Noise Analysis](#cmos-noise-analysis) | Noise margins and gain curve |
+| [CMOS Delay Analysis](#cmos-delay-analysis) | Propagation delay, rise/fall time |
+| [CMOS Power Analysis](#cmos-power-analysis) | Dynamic, short-circuit, and static power |
+| [Summary](#summary-of-the-designed-inverter-from-pre-layout-analysis) | Consolidated results table |
+
 
 
 
@@ -238,7 +242,7 @@ Value of Vth:
 
 Hence the finalised `threshold voltage` of the inverter is `0.88v`. As it can be seen that the value is not exactly half of the `Vdd` .i.e `0.9V`. This is because of the sizing limitations that I have applied(in terms of aspect ratios).
 
-
+---
 ### CMOS Noise Analysis
 
 **Noise Analysis** determines how much unwanted signal variation (noise) a CMOS logic gate can tolerate without malfunctioning.
@@ -292,9 +296,202 @@ From the analysis, we get the following values:
 
 Hence the calculated Noise Margins are:
 
- **NML = 0.687V** and **NMH = 0.746**.
+**NML = 0.687V** and **NMH = 0.746**.
 
  Now, they aren't equal. But if we were to take some more effort to get the values of Vth closet to Vdd/2 (0.9V), then we can get NML = NMH. But for our case they are close enough.
 
+---
+ ### CMOS Delay Analysis
 
- **AS OF NOW THIS MUCH IS UPDATED**
+ Delay analysis in CMOS circuits helps determine how fast a circuit can operate and how quickly signals propagate through it.  
+It is critical in **digital design** to ensure **timing correctness** and **reliable performance**.
+
+####  Key Delay Components
+1. **Propagation Delay (`t_pd`)**  
+   Time taken for the output to switch after an input change.
+   
+2. **Rise Time (`t_r`)**  
+   Time for output to go from 10% → 90% of final value.
+   
+3. **Fall Time (`t_f`)**  
+   Time for output to go from 90% → 10% of final value.
+
+#### Factors Affecting Delay
+- **Load Capacitance (`C_L`)** – Larger loads cause higher delay.
+- **Transistor Sizes** – Wider transistors can reduce delay.
+- **Supply Voltage (`Vdd`)** – Higher voltage generally reduces delay.
+- **Process Technology** – Smaller nodes usually offer faster switching.
+
+#### Delay Parameters in CMOS Circuits
+
+Below are the key delay parameters observed during CMOS circuit timing analysis.
+
+#### **1. tpHL (High-to-Low Propagation Delay)**
+- **Definition:** Time taken for the output to transition from **logic high (1)** to **logic low (0)** after the corresponding change in input.
+
+#### **2. tpLH (Low-to-High Propagation Delay)**
+- **Definition:** Time taken for the output to transition from **logic low (0)** to **logic high (1)** after the corresponding change in input.
+
+#### **3. Propagation Delay (t_pd)**
+- **Definition:** The **average delay** of `tpHL` and `tpLH`, representing the overall switching speed of the circuit.
+<p align="center">
+t_pd = (tpHL + tpLH) / 2 
+</p>
+
+#### **4. Rise Time (t_r)**
+- **Definition:** Time for the output voltage to rise from **10%** of its final high value to **90%** of its final high value.
+- **Significance:** Indicates how quickly the signal can charge up to logic high.
+
+#### **5. Fall Time (t_f)**
+- **Definition:** Time for the output voltage to fall from **90%** of its initial high value to **10%** of its final low value.
+- **Significance:** Indicates how quickly the signal can discharge to logic low.
+
+
+<p align="center">
+  <img src="Images/delay_placeholder.png" alt="delay_placeholder" width="500"/>
+</p>
+
+
+Now from the analysis that has been done:
+
+**Test-Bench:**
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_Test.png" alt="delay_test" width="600"/>
+</p>
+
+**Simulated Graph:**
+
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_Grph_Whole.png" alt="delay_grph" width="600"/>
+</p>
+
+
+**tpHL and tpLH:**
+
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_tpHL.png" alt="delay_tphl" width="600"/>
+</p>
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_tpLH.png" alt="delay_tplh" width="600"/>
+</p>
+
+**Rise Time and Fall Time:**
+
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_Rise.png" alt="delay_rise" width="600"/>
+</p>
+<p align="center">
+  <img src="Images/Delay_Analysis/Delay_Fall.png" alt="delay_fall" width="600"/>
+</p>
+
+Hence, the summary of the delay analysis is:
+
+| Name             | Value                                                                |
+| ----------------- | ------------------------------------------------------------------ |
+| `tpHL`|  `37.542 ps`  |
+| `tpLH`|   `44.61 ps` |
+| `t_pd`| `41.07 ps`|
+| `t_r` | `0.13 ns` |
+| `t_f` | `0.136 ns` |
+
+---
+### CMOS Power Analysis
+Power analysis in CMOS circuits helps determine the energy efficiency and thermal performance of a design.  
+It is crucial for **low-power VLSI design**, especially in portable and high-performance applications.
+
+
+#### **1. Types of Power Consumption**
+
+#### 🔹 Dynamic Power
+- Caused by switching activity when charging and discharging load capacitances.
+- Formula:
+  
+  **P_dynamic = α × C_L × V_DD² × f**
+  
+  Where:  
+  - α → Switching activity factor (0 ≤ α ≤ 1)  
+  - C_L → Load capacitance  
+  - V_DD → Supply voltage  
+  - f → Operating frequency  
+
+
+#### 🔹 Short-Circuit Power
+- Occurs during signal transitions when both PMOS and NMOS conduct simultaneously.
+- Formula:
+  
+  **P_sc ≈ I_sc × V_DD × t_sc × f**
+  
+  Where:  
+  - I_sc → Short-circuit current  
+  - t_sc → Short-circuit time per transition  
+  - f → Operating frequency  
+
+
+#### 🔹 Static (Leakage) Power
+- Caused by subthreshold leakage, gate leakage, and junction leakage even when the circuit is idle.
+- Formula:
+  
+  **P_static = I_leak × V_DD**
+  
+  Where:  
+  - I_leak → Total leakage current  
+  - V_DD → Supply voltage  
+
+
+#### **2. Importance**
+- Reduces **heat dissipation**.  
+- Extends **battery life** in portable devices.  
+- Improves **overall system reliability**.
+
+
+In the analysis process, a load capacitance has been considered. This is done to measure the loaded power of the inverter. Following shows the detailed setup and analysis result from the power analysis:
+
+**Test-Bench:**
+<p align="center">
+  <img src="Images/Power_Analysis/Power_Test.png" alt="pwr_test" width="600"/>
+</p>
+
+**Simulated Graph and Result:**
+<p align="center">
+  <img src="Images/Power_Analysis/Power_grph_whole.png" alt="pwr_grph" width="600"/>
+</p>
+
+
+
+As, it can be seen from the graph that there is a flowing of current only when the load capacitor is being charged .i.e. the current flowing from the Vdd to the load capacitor. Also it is to be considered that as the fets are not ideal, there exists a time when both the fets are on which causes short-circuit causing the current to flow from vdd directly to the ground. Hence the surge of current that is shown in the graph is from both dynamic+short-circuit current.
+
+
+<p align="center">
+  <img src="Images/Power_Analysis/Power_sim_windw.png" alt="pwr_sim" width="600"/>
+</p>
+
+
+Fromt the calculation above, the loaded power consumed by the inverter is about **17uW**. This power is consued at every switching operation. As a result, to reduce the power consumption in larger circuits minimisation in the switching activity is to be done. Further, reduction of the load capacitance can also be useful in this scenario.
+
+---
+## Summary from Pre-Layout Analysis:
+As the Pre-Layout Analysis of the inverter is done, I will be stepping into the layout analysis of the inverter with LVS at the end. However Before Entering into the later part, below table shows the calculated values and features from the Pre-Layout analysis:
+
+<div align="center">
+
+| **Parameter** | **Value** |
+|--------------|-----------|
+| **Cells Used** | Standard `1.8V` `nfet` and `pfet` |
+| **Vth** | `0.882 V` |
+| **VIL** | `0.756 V` |
+| **VIH** | `1.001 V` |
+| **VOL** | `0.069 V` |
+| **VOH** | `1.747 V` |
+| **NML** | `0.687 V` |
+| **NMH** | `0.746 V` |
+| **tpHL** | `37.542 ps` |
+| **tpLH** | `44.61 ps` |
+| **t_pd** | `41.07 ps` |
+| **t_r** | `0.13 ns` |
+| **t_f** | `0.136 ns` |
+| **Power** | `17 µW` |
+
+</div>
+
+
+##

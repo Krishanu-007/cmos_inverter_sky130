@@ -1,0 +1,7 @@
+* SPICE3 file created from inv_layout_fixed.ext - technology: sky130B
+
+.subckt inv_layout_fixed Vin Vout Vdd Vss
+X0 Vout Vin Vdd Vdd sky130_fd_pr__pfet_01v8 ad=1.125 pd=5.9 as=1.125 ps=5.9 w=2.5 l=0.15
+X1 Vout Vin Vss Vss sky130_fd_pr__nfet_01v8 ad=0.45 pd=2.9 as=0.45 ps=2.9 w=1 l=0.15
+.ends
+

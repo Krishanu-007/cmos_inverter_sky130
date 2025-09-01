@@ -1,0 +1,11 @@
+.lib /usr/local/share/pdk/sky130B/libs.tech/ngspice/sky130.lib.spice tt
+.include /home/krishanu/Desktop/cmos_inverter_sky130/Simulation/Layout_Simulations/inv_layout_fixed.spice
+Vdd Vdd 0 1.8
+Vin Vin 0 0
+Xinv Vin Vout Vdd 0 inv_layout_fixed
+Cload Vout 0 10f
+Vin Vin 0 PULSE(0 1.8 0 500ps 500ps 4ns 8ns)
+.tran 100ps 20ns
+.save all
+.end
+

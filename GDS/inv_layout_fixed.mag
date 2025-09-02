@@ -1,0 +1,108 @@
+magic
+tech sky130B
+timestamp 1756733127
+<< nwell >>
+rect -115 70 75 360
+<< nmos >>
+rect -5 -70 10 30
+<< pmos >>
+rect -5 90 10 340
+<< ndiff >>
+rect -50 25 -5 30
+rect -50 -65 -40 25
+rect -20 -65 -5 25
+rect -50 -70 -5 -65
+rect 10 25 55 30
+rect 10 -65 25 25
+rect 45 -65 55 25
+rect 10 -70 55 -65
+<< pdiff >>
+rect -50 335 -5 340
+rect -50 95 -40 335
+rect -20 95 -5 335
+rect -50 90 -5 95
+rect 10 335 55 340
+rect 10 95 25 335
+rect 45 95 55 335
+rect 10 90 55 95
+<< ndiffc >>
+rect -40 -65 -20 25
+rect 25 -65 45 25
+<< pdiffc >>
+rect -40 95 -20 335
+rect 25 95 45 335
+<< psubdiff >>
+rect -95 25 -50 30
+rect -95 -65 -80 25
+rect -60 -65 -50 25
+rect -95 -70 -50 -65
+<< nsubdiff >>
+rect -95 335 -50 340
+rect -95 95 -80 335
+rect -60 95 -50 335
+rect -95 90 -50 95
+<< psubdiffcont >>
+rect -80 -65 -60 25
+<< nsubdiffcont >>
+rect -80 95 -60 335
+<< poly >>
+rect -5 340 10 355
+rect -5 30 10 90
+rect -5 -90 10 -70
+rect -30 -100 10 -90
+rect -30 -120 -20 -100
+rect 0 -120 10 -100
+rect -30 -130 10 -120
+<< polycont >>
+rect -20 -120 0 -100
+<< locali >>
+rect -90 335 -10 340
+rect -90 95 -80 335
+rect -60 95 -40 335
+rect -20 95 -10 335
+rect -90 90 -10 95
+rect 15 335 55 340
+rect 15 95 25 335
+rect 45 95 55 335
+rect -90 25 -10 30
+rect -90 -65 -80 25
+rect -60 -65 -40 25
+rect -20 -65 -10 25
+rect -90 -70 -10 -65
+rect 15 25 55 95
+rect 15 -65 25 25
+rect 45 -65 55 25
+rect 15 -70 55 -65
+rect 30 -90 55 -70
+rect -115 -100 10 -90
+rect -115 -110 -20 -100
+rect -30 -120 -20 -110
+rect 0 -120 10 -100
+rect 30 -110 75 -90
+rect -30 -130 10 -120
+<< viali >>
+rect -80 95 -60 335
+rect -40 95 -20 335
+rect -80 -65 -60 25
+rect -40 -65 -20 25
+<< metal1 >>
+rect -115 335 75 340
+rect -115 95 -80 335
+rect -60 95 -40 335
+rect -20 95 75 335
+rect -115 90 75 95
+rect -115 25 75 30
+rect -115 -65 -80 25
+rect -60 -65 -40 25
+rect -20 -65 75 25
+rect -115 -70 75 -65
+<< labels >>
+rlabel metal1 -115 285 -115 285 7 Vdd
+port 3 w
+rlabel locali -115 -100 -115 -100 7 Vin
+port 1 w
+rlabel locali 75 -100 75 -100 3 Vout
+port 2 e
+rlabel metal1 -115 -50 -115 -50 7 Vss
+port 4 w
+<< end >>

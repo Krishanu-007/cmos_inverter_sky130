@@ -25,7 +25,11 @@ The entire operation is done by using the standard `1.8v nfet` and `1.8v pfet`. 
 | [CMOS Noise Analysis](#cmos-noise-analysis) | Noise margins and gain curve |
 | [CMOS Delay Analysis](#cmos-delay-analysis) | Propagation delay, rise/fall time |
 | [CMOS Power Analysis](#cmos-power-analysis) | Dynamic, short-circuit, and static power |
-| [Summary](#summary-of-the-designed-inverter-from-pre-layout-analysis) | Consolidated results table |
+| [Summary of Pre-Layout Analysis](#summary-of-the-designed-inverter-from-pre-layout-analysis) | Consolidated results table |
+| [Layout](#layout-generation) | Layout design |
+| [Post-Layout Analysis](#post-layout-analysis) | Post analysis of the generated layout |
+| [GDS-View](#gds-view) | GDS of the  design |
+| [Conclusion](#conclusion) | Conclusion |
 
 
 
@@ -36,8 +40,8 @@ The entire operation is done by using the standard `1.8v nfet` and `1.8v pfet`. 
 | ----------------- | ------------------------------------------------------------------ |
 | Transistor Analysis| ✅ Completed   |
 | Schematic Design | ✅ Completed   |
-| Layout Design | ⏳ To be done |
-| Layout vs Schematic(LVS) | ⏳ To be done |
+| Layout Design |  ✅ Completed|
+| Layout vs Schematic(LVS) | ✅ Completed |
 
 
 
@@ -493,5 +497,196 @@ As the Pre-Layout Analysis of the inverter is done, I will be stepping into the 
 
 </div>
 
+---
+# Layout Generation
 
-##
+For creating the layout, MAGIC VLSI is used with the tech files from `sky130B`.
+
+Below shown are two layouts: The first one maintaining the minimum design size constraints whereas the second one matching the schematic dimensions.
+
+
+**Minimum Feature Sized Layout:**
+<p align="center">
+  <img src="Images/Layouts/Initial_Layout.png" alt="min_layout" width="600"/>
+</p>
+
+In the above layout the minimum feature size is tried, with a ratio of 2.5 for in between the aspect ratios of `PMOS` and `NMOS`.
+
+
+**Finalized Layout:**
+<p align="center">
+  <img src="Images/Layouts/Fixed_Layout.png" alt="final_layout" width="600"/>
+</p>
+
+Here the layout is mantained with the scaling as that of the **Schematic**.
+
+# Post-Layout Analysis:
+
+The psot-layout analysis is done using `netgen` for LVS and DRC check is done within MAGIC only. After extracting the `.ext` file and converting it into `.spice` format, seperate testbenches are written using that layout spice model using `ngspice`.
+
+## LVS(Layout vs Schematic):
+
+The layout vs schematic of the design is done which shows the layout matches perfectly with our designed schematic. It is a basic simple circuit as a result it is supposed to be matching which actually happens and the report generated is stored into `LVS/comp.out`. 
+
+Some of the points that are worth mentioning before doing the LVS:
+1) The naming convention of both the circuits should match, netgen might throw occational errors.
+2) The Labeling of the pins should match, even if they are synonymous to each other- Vss vs GND.
+3) The LVS is done mainly on the Cells generated as a result there is no need of mentioning of testbench( one may comment it out)
+
+**LVS Console:**
+<p align="center">
+  <img src="Images/LVS/LVS_Console1.png" alt="LVS_1" width="600"/>
+</p>
+<p align="center">
+  <img src="Images/LVS/LVS_Console2.png" alt="LVS_2" width="600"/>
+</p>
+
+As it can be seen at the end of the LVS the Final result concludes that the Circuits match uniquely. -> **This is required for layout validation.**
+
+
+
+
+## Remaining Post-Layout Simulations:
+
+For the other post-layout simulations, the spice model of the layout is extracted and two seperate testbench in spice are written- dc for VTC and Noise Analysis, and transient for Delay and Power Analysis. The execution is simple just running those two testbenches using ngspice and just like the way in pre-layout analysis same process is to be followed. Below is the summary of the Post-Layout details:
+
+
+<div align="center">
+
+| **Parameter** | **Value** |
+|--------------|-----------|
+| **Vth** | `0.882 V` |
+| **VIL** | `0.756 V` |
+| **VIH** | `1.001 V` |
+| **VOL** | `0.069 V` |
+| **VOH** | `1.747 V` |
+| **NML** | `0.687 V` |
+| **NMH** | `0.746 V` |
+| **tpHL** | `95.67 ps` |
+| **tpLH** | `114.79 ps` |
+| **t_pd** | `105.23 ps` |
+| **t_r** | `0.18 ns` |
+| **t_f** | `0.17 ns` |
+| **Power** | `4.96 µW` |
+
+</div>
+
+
+## Differences in Pre-Layout and Post-Layout Results:
+
+### 1. Propagation Delay and Operating Speed
+
+- **Schematic delay:**  
+  `t_pd = 41.07 ps`
+
+  - Maximum switching frequency:  
+    `f_max = 1 / t_pd ≈ 24.34 GHz`
+
+  - Practical synchronous clock frequency:  
+    `f_clk = 1 / (2 × t_pd) ≈ 12.17 GHz`
+
+- **Layout delay:**  
+  `t_pd = 105.23 ps`
+
+  - Maximum switching frequency:  
+    `f_max = 1 / t_pd ≈ 9.50 GHz`
+
+  - Practical synchronous clock frequency:  
+    `f_clk = 1 / (2 × t_pd) ≈ 4.75 GHz`
+
+- **Slowdown factor (layout vs schematic):**  
+  `105.2 / 41.7 ≈ 2.5×`
+
+### 2. Power Consumption
+
+- **Schematic:** `P = 17 µW`  
+- **Layout:** `P = 4.96 µW` 
+
+### 3. Power–Delay Product (PDP)
+
+`PDP = P × t_pd`
+
+- **Schematic:**  
+  `PDP = 0.709 fJ`
+
+- **Layout:**  
+  `PDP = 0.522 fJ`
+
+✅ Layout is **more energy-efficient per switch**.
+
+### 4. Energy–Delay Product (EDP)
+
+`EDP = PDP × t_pd`
+
+- **Schematic:**  
+  `EDP = 2.96 × 10⁻²⁶ J·s`
+
+- **Layout:**  
+  `EDP = 5.49 × 10⁻²⁶ J·s`
+
+✅ Schematic is **better overall performance-wise**, despite higher power.
+
+### 5. Figure of Merit (FOM)
+
+`FOM = 1 / EDP`
+
+- **Schematic:** `FOM ≈ 3.38 × 10²⁵`  
+- **Layout:** `FOM ≈ 1.82 × 10²⁵`  
+
+### 6. Rise/Fall Times
+
+- **Schematic:** `t_r = t_f = 0.13 ns (130 ps)`  
+- **Layout:** `t_r = 0.18 ns, t_f = 0.17 ns`
+
+- Ratio vs schematic:  
+  - Rise: `180 / 130 ≈ 1.39` → ~39% slower  
+  - Fall: `170 / 130 ≈ 1.31` → ~31% slower  
+
+Overall: **~35% slower slew in layout**.
+
+### 7. Electrical Implications of Slower Slew
+
+1. **Propagation delay** increases.  
+2. **Dynamic energy** (`CV²`) per transition stays constant, but peak currents are lower.  
+3. **Short-circuit losses** increase due to longer pMOS/nMOS overlap.  
+4. **Average power** measured lower in layout → due to parasitics and reduced peak currents.  
+5. **Signal integrity** worsens (noise, crosstalk, setup/hold issues).
+
+### 8. Why Layout Power < Schematic Power?
+
+- Slower transitions → lower instantaneous charging currents.  
+- Extraction parasitics redistribute currents.  
+- Average power window may differ between sims.  
+- Short-circuit losses rose, but dynamic peak power reduction dominates.
+### 9. Summary Table
+
+| Case       | Delay (ps) | f_clk (GHz) | Power (µW) | PDP (fJ) | EDP (×10⁻²⁶ J·s) | FOM (×10²⁵) | Rise/Fall (ns) |
+|------------|------------|-------------|------------|----------|------------------|-------------|----------------|
+| Schematic  | 41.7       | 12.0        | 17.0       | 0.709    | 2.96             | 3.38        | 0.13 / 0.13    |
+| Layout     | 105.2      | 4.75        | 4.96       | 0.522    | 5.49             | 1.82        | 0.18 / 0.17    |
+
+
+# GDS View:
+
+GDSII format view is also created, however a constrasting observation can be done. While creating the PMOS, it was done just by replicating the NMOS and covering it with nwell. MAGIC automatically detects it and considers it as PMOS, that is why all the post-layout simulations as well as the spice values were possible. However in GDS view in Klayout this not shown, as GDS is nothing but geometrical shapes. One can just retransform the GDS into `.mag` format to check the validity in MAGIC. Below shown are the GDS views:
+
+**GDS View in 2D format:**
+<p align="center">
+  <img src="Images/GDS/GDS.png" alt="GDS" width="600"/>
+</p>
+
+**GDS View in 2.5D format:**
+<p align="center">
+  <img src="Images/GDS/GDS_2.5_v1.png" alt="GDS2.5_v1" width="600"/>
+</p>
+<p align="center">
+  <img src="Images/GDS/GDS_2.5_v2.png" alt="GDS2.5_v2" width="600"/>
+</p>
+
+
+# Conclusion:
+In this project, a CMOS inverter was implemented using the SKY130 PDK. The schematic was designed and verified through simulation, followed by layout creation in Magic. DRC and LVS checks confirmed rule compliance and schematic equivalence, while post-layout simulations validated functionality. Finally, the layout was exported to GDSII format, producing a fabrication-ready design.
+
+# Reference:
+
+Every other video, documentation and person related to Open-Source Silicon designs.😄❤️
